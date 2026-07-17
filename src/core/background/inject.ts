@@ -2,7 +2,6 @@ import { getConnectorByUrl } from '@/util/util-connector';
 import browser from 'webextension-polyfill';
 
 const SHELF_APP_ORIGIN = 'https://misc5-shelf.butter3.workers.dev';
-const SHELF_APP_MATCHES = ['https://misc5-shelf.butter3.workers.dev/*'];
 const PLAYBACK_SITE_MATCHES = ['http://*/*', 'https://*/*'];
 const PLAYBACK_CONTENT_SCRIPT_ID = 'misc5-playback-sites';
 
@@ -20,7 +19,6 @@ export async function registerPlaybackContentScript() {
 		{
 			id: PLAYBACK_CONTENT_SCRIPT_ID,
 			matches: PLAYBACK_SITE_MATCHES,
-			excludeMatches: SHELF_APP_MATCHES,
 			js: ['content/main.js'],
 			allFrames: true,
 		},
@@ -39,6 +37,17 @@ function isShelfAppUrl(url: string): boolean {
 	} catch {
 		return false;
 	}
+}
+
+// activeTab is granted when the user opens the extension popup. This keeps
+// the connection bridge off every page until that explicit action.
+export async function injectShelfBridgeForActiveTab() {
+	const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+	if (typeof tab?.id !== 'number' || !tab.url || !isShelfAppUrl(tab.url)) return;
+	await browser.scripting.executeScript({
+		target: { tabId: tab.id },
+		files: ['content/main.js'],
+	});
 }
 
 /**
@@ -75,15 +84,6 @@ async function attemptInjectTab(tab: browser.Tabs.Tab, playbackEnabled: boolean)
  * @returns A promise that resolves when the connector is injected
  */
 async function injectConnector(tabId: number, url: string, playbackEnabled: boolean) {
-	// The Shelf page has no playback connector, but it uses the same content
-	// entrypoint for its page <-> extension device-auth bridge. Re-inject it
-	// after an extension update so an already-open login page works immediately.
-	if (isShelfAppUrl(url)) {
-		return browser.scripting.executeScript({
-			target: { tabId },
-			files: ['content/main.js'],
-		});
-	}
 	if (!playbackEnabled) return;
 
 	const connector = await getConnectorByUrl(url);

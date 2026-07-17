@@ -138,19 +138,11 @@ export const common: Manifest.WebExtensionManifest = {
 	description: 'Sync music playback to MISC5 Shelf.',
 	version: pkg.version,
 
-	permissions: ['storage', 'identity', 'contextMenus', 'notifications', 'scripting'],
-	// Only the MISC5 app is required for direct device authorization. Playback
-	// access is requested separately, after the account has been connected.
-	host_permissions: SHELF_APP_MATCHES,
+	permissions: ['storage', 'identity', 'contextMenus', 'notifications', 'scripting', 'activeTab'],
+	// No host permission is required at install. Playback access is requested
+	// after connection; activeTab injects the MISC5 bridge only when the user
+	// opens the extension from the currently active Shelf page.
 	optional_host_permissions: ['http://*/*', 'https://*/*'],
-
-	content_scripts: [
-		{
-			matches: SHELF_APP_MATCHES,
-			js: ['content/main.js'],
-			all_frames: true,
-		},
-	],
 
 	web_accessible_resources: [
 		{

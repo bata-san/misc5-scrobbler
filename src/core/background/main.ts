@@ -39,6 +39,7 @@ import { openTab } from '@/util/util-browser';
 import { setRegexDefaults } from '@/util/regex';
 import {
 	attemptInjectAllTabs,
+	injectShelfBridgeForActiveTab,
 	registerPlaybackContentScript,
 	unregisterPlaybackContentScript,
 } from './inject';
@@ -552,6 +553,13 @@ setupBackgroundListeners(
 		type: 'shelfFinishConnection',
 		fn: async ({ origin, code, state }) => {
 			await scrobbleService.finishShelfConnection(origin, code, state);
+		},
+	}),
+
+	backgroundListener({
+		type: 'activateShelfBridge',
+		fn: async () => {
+			await injectShelfBridgeForActiveTab();
 		},
 	}),
 );

@@ -6,7 +6,7 @@ import { initializeThemes } from '@/theme/themes';
 import '@/theme/themes.scss';
 import type { Accessor } from 'solid-js';
 import { createResource, Show, createMemo, createEffect } from 'solid-js';
-import { popupListener, setupPopupListeners } from '@/util/communication';
+import { popupListener, sendContentMessage, setupPopupListeners } from '@/util/communication';
 import Base from './base';
 import { getCurrentTab } from '@/core/background/util';
 import Disabled from './disabled';
@@ -56,6 +56,9 @@ function Popup() {
 	const [navigatorResource, { refetch }] = createResource(
 		getMobileNavigatorGroup,
 	);
+	// Opening the popup is an explicit activeTab gesture. If this is the Shelf
+	// page, inject its connection bridge without any persistent host access.
+	void sendContentMessage({ type: 'activateShelfBridge', payload: undefined });
 
 	createEffect(() => {
 		tab(); // does nothing, but causes the effect to re-run when the tab changes

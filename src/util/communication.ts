@@ -131,6 +131,10 @@ interface ContentCommunications {
 		payload: { origin: string; code: string; state: string };
 		response: void;
 	};
+	activateShelfBridge: {
+		payload: undefined;
+		response: void;
+	};
 }
 
 interface BackgroundCommunications {

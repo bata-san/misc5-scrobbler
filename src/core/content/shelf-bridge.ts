@@ -1,12 +1,13 @@
 import { sendContentMessage } from '@/util/communication';
 import type { ShelfConnectionRequest } from '@/core/scrobbler/shelf-scrobbler';
+import browser from 'webextension-polyfill';
 
 const BRIDGE = 'misc5-shelf-extension';
 const PRODUCTION_SHELF_ORIGIN = 'https://misc5-shelf.butter3.workers.dev';
 
 type BridgeMessage = {
 	source?: string;
-	type?: 'ping' | 'connect' | 'connection-code';
+	type?: 'ping' | 'connect' | 'connection-code' | 'open-settings';
 	origin?: string;
 	code?: string;
 	state?: string;
@@ -51,6 +52,9 @@ function isTrustedShelfOrigin(origin: string): boolean {
 // シェルフのWebページだけが呼ぶ接続ブリッジ。PKCE verifierはbackgroundに残したまま、
 // ページには認可コードの発行・返却だけを任せる。
 export function setupShelfBridge() {
+	if (isTrustedShelfOrigin(window.location.origin)) {
+		reply('ready');
+	}
 	window.addEventListener('message', (event: MessageEvent<BridgeMessage>) => {
 		if (
 			event.source !== window ||
@@ -62,6 +66,10 @@ export function setupShelfBridge() {
 		}
 		if (event.data.type === 'ping') {
 			reply('ready');
+			return;
+		}
+		if (event.data.type === 'open-settings' && event.data.origin === window.location.origin) {
+			void browser.runtime.openOptionsPage();
 			return;
 		}
 		if (event.data.type === 'connect' && event.data.origin === window.location.origin) {

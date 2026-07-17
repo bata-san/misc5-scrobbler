@@ -149,6 +149,31 @@ h2 {
 	margin: 0 0 16px;
 }
 
+.permissionCopy {
+	color: var(--content);
+	font: 13px/1.6 Inter, Arial, sans-serif;
+	margin: 20px 0 12px;
+	max-width: 48ch;
+}
+
+.permissionAction {
+	background: #ffc700;
+	border: 1px solid var(--ink);
+	color: var(--ink);
+	cursor: pointer;
+	font: 11px/1 Silkscreen, monospace;
+	letter-spacing: 0.04em;
+	min-height: 40px;
+	padding: 0 12px;
+
+	&:hover,
+	&:focus-visible {
+		background: var(--ink);
+		color: var(--bg);
+		outline: none;
+	}
+}
+
 .rangeRow {
 	align-items: baseline;
 	display: flex;

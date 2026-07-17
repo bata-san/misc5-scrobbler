@@ -7,6 +7,7 @@ import { Anchor } from '../components/util';
 import styles from './settings.module.scss';
 
 const PRIVACY_POLICY_URL = 'https://misc5-shelf.butter3.workers.dev/privacy';
+const PLAYBACK_ORIGINS = ['http://*/*', 'https://*/*'];
 
 type ShelfConnection = { account: string };
 type ShelfStorage = { Shelf?: { connection?: ShelfConnection } };
@@ -106,6 +107,9 @@ function Toggle(props: {
 function Settings() {
 	const [connection] = createResource(readConnection);
 	const [settings, { refetch: refetchSettings }] = createResource(readSettings);
+	const [playbackAccess, { refetch: refetchPlaybackAccess }] = createResource(
+		() => browser.permissions.contains({ origins: PLAYBACK_ORIGINS }),
+	);
 	const [filter, setFilter] = createSignal('');
 	const version = browser.runtime.getManifest().version;
 	const visibleConnectors = () => {
@@ -126,6 +130,11 @@ function Settings() {
 	const updateConnector = (connector: ConnectorMeta, enabled: boolean) => {
 		void Options.setConnectorEnabled(connector, enabled).then(() =>
 			refetchSettings(),
+		);
+	};
+	const requestPlaybackAccess = () => {
+		void browser.permissions.request({ origins: PLAYBACK_ORIGINS }).then(() =>
+			refetchPlaybackAccess(),
 		);
 	};
 	const jumpTo = (id: string) => {
@@ -166,6 +175,12 @@ function Settings() {
 							>
 								<p class={styles.account}>CONNECTED / {connection()?.account}</p>
 								<p class={styles.copy}>アカウントを変更するまで、再生履歴は自動でシェルフへ同期されます。</p>
+								<Show when={!playbackAccess.loading && !playbackAccess()}>
+									<p class={styles.permissionCopy}>同期するには、すべてのサイトへのアクセスを有効にしてください。</p>
+									<button class={styles.permissionAction} type="button" onClick={requestPlaybackAccess}>
+										すべてのサイトへのアクセスを有効化
+									</button>
+								</Show>
 							</Show>
 						</Show>
 					</section>

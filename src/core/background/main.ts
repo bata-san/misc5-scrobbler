@@ -37,7 +37,11 @@ import {
 import ClonedSong from '@/core/object/cloned-song';
 import { openTab } from '@/util/util-browser';
 import { setRegexDefaults } from '@/util/regex';
-import { attemptInjectAllTabs } from './inject';
+import {
+	attemptInjectAllTabs,
+	registerPlaybackContentScript,
+	unregisterPlaybackContentScript,
+} from './inject';
 import {
 	getSongInfo,
 	scrobble,
@@ -73,6 +77,12 @@ browser.contextMenus?.onClicked.addListener(
 browser.commands?.onCommand.addListener(
 	(command) => void commandHandler(command),
 );
+browser.permissions.onAdded.addListener(() => {
+	void registerPlaybackContentScript().then(attemptInjectAllTabs);
+});
+browser.permissions.onRemoved.addListener(() => {
+	void unregisterPlaybackContentScript();
+});
 
 /**
  * Handle user commands (hotkeys) to the extension.
@@ -585,6 +595,7 @@ function onStartup() {
 	disabledTabs.set({});
 
 	setRegexDefaults();
+	void registerPlaybackContentScript().then(attemptInjectAllTabs);
 	updateVersionInStorage();
 	bindScrobblers().then((bound) => {
 		if (!bound) {
@@ -635,7 +646,6 @@ function onStartup() {
  */
 function onInstalled() {
 	onStartup();
-	attemptInjectAllTabs();
 }
 
 /**

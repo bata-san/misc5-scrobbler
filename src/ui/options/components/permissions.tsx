@@ -5,7 +5,7 @@ import styles from './components.module.scss';
 import { t } from '@/util/i18n';
 
 const desiredPermissions = {
-	origins: ['http://*/', 'https://*/'],
+	origins: ['http://*/*', 'https://*/*'],
 };
 
 export default function Permissions() {

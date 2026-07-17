@@ -139,15 +139,14 @@ export const common: Manifest.WebExtensionManifest = {
 	version: pkg.version,
 
 	permissions: ['storage', 'identity', 'contextMenus', 'notifications', 'scripting'],
-	host_permissions: siteMatches,
-	// Not eagerly granted — requested at runtime (see permissions.tsx) only if
-	// the user configures a self-hosted connector override whose domain isn't
-	// one of the known sites above.
-	optional_host_permissions: ['http://*/', 'https://*/'],
+	// Only the MISC5 app is required for direct device authorization. Playback
+	// access is requested separately, after the account has been connected.
+	host_permissions: SHELF_APP_MATCHES,
+	optional_host_permissions: ['http://*/*', 'https://*/*'],
 
 	content_scripts: [
 		{
-			matches: siteMatches,
+			matches: SHELF_APP_MATCHES,
 			js: ['content/main.js'],
 			all_frames: true,
 		},

@@ -8,9 +8,11 @@ import { sendContentMessage } from '@/util/communication';
 import savedEdits from '../storage/saved-edits';
 import regexEdits from '../storage/regex-edits';
 import { webhookListenForApproval } from './webhook';
+import { setupShelfBridge } from './shelf-bridge';
 
 main();
 async function main() {
+	setupShelfBridge();
 	updateTheme();
 	try {
 		if (

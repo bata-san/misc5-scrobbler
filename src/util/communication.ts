@@ -122,6 +122,10 @@ interface ContentCommunications {
 		payload: undefined;
 		response: boolean;
 	};
+	shelfConnect: {
+		payload: { origin: string };
+		response: void;
+	};
 }
 
 interface BackgroundCommunications {

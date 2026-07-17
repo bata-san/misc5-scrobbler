@@ -7,12 +7,12 @@ import { releaseTarget } from './scripts/util';
  */
 export const common: Manifest.WebExtensionManifest = {
 	manifest_version: 3,
-	name: 'Web Scrobbler',
+	name: 'MISC5 Shelf',
 	default_locale: 'en',
 	description: '__MSG_extDescription__',
 	version: pkg.version,
 
-	permissions: ['storage', 'contextMenus', 'notifications', 'scripting'],
+	permissions: ['storage', 'identity', 'contextMenus', 'notifications', 'scripting'],
 	host_permissions: ['http://*/', 'https://*/'],
 
 	content_scripts: [
@@ -34,11 +34,6 @@ export const common: Manifest.WebExtensionManifest = {
 		},
 	],
 
-	options_ui: {
-		page: 'src/ui/options/index.html',
-		open_in_tab: true,
-	},
-
 	icons: {
 		16: 'icons/icon_main_16.png',
 		48: 'icons/icon_main_48.png',
@@ -53,12 +48,6 @@ export const common: Manifest.WebExtensionManifest = {
 	commands: {
 		'toggle-connector': {
 			description: '__MSG_hotkeyToggleConnector__',
-		},
-		'love-song': {
-			description: '__MSG_hotkeyLoveSong__',
-		},
-		'unlove-song': {
-			description: '__MSG_hotkeyUnloveSong__',
 		},
 	},
 };

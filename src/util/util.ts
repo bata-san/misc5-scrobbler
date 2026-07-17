@@ -7,6 +7,7 @@ import type {
 } from '@/core/storage/options';
 import type {
 	ListenBrainzModel,
+	ShelfModel,
 	WebhookModel,
 	Properties,
 	StateManagement,
@@ -138,6 +139,7 @@ export function hideObjectValue(
 		| Properties
 		| ListenBrainzModel
 		| WebhookModel
+		| ShelfModel
 		| StateManagement
 		| RegexEdit[]
 		| CacheScrobble[]

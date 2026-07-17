@@ -62,6 +62,17 @@ export type WebhookModel = {
 	}[];
 };
 
+export type ShelfModel = {
+	connection?: {
+		origin: string;
+		account: string;
+		deviceId: string;
+		accessToken: string;
+		refreshToken: string;
+		expiresAt: number;
+	};
+};
+
 export type ArrayProperty = {
 	applicationName: string;
 	userApiUrl: string;
@@ -75,6 +86,7 @@ export interface ScrobblerModels {
 	ListenBrainz?: ListenBrainzModel;
 	Maloja?: Properties;
 	Webhook?: WebhookModel;
+	Shelf?: ShelfModel;
 	Pleroma?: Properties;
 }
 

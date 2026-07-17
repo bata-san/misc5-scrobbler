@@ -1,11 +1,11 @@
 {
-  "name": "web-scrobbler",
+	"name": "misc5-scrobbler",
   "version": "3.22.0",
   "author": "David Šabata <posta@davidsabata.cz>",
   "contributors": [
     "@mountainash (https://mountainash.id.au/)"
   ],
-  "description": "Scrobble music all around the web!",
+	"description": "Sync music playback to MISC5 Shelf.",
   "private": true,
   "type": "module",
   "scripts": {
@@ -26,12 +26,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/web-scrobbler/web-scrobbler.git"
+		"url": "git+https://github.com/bata-san/misc5-scrobbler.git"
   },
   "bugs": {
     "url": "https://github.com/web-scrobbler/web-scrobbler/issues"
   },
-  "homepage": "https://webscrobbler.com/",
+	"homepage": "https://github.com/bata-san/misc5-scrobbler",
   "dependencies": {
     "@web-scrobbler/metadata-filter": "3.2.0",
     "blueimp-md5": "2.19.0",

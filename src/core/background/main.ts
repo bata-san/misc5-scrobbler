@@ -530,6 +530,13 @@ setupBackgroundListeners(
 			return (await browser.tabs.get(tabId)).audible ?? true;
 		},
 	}),
+
+	backgroundListener({
+		type: 'shelfConnect',
+		fn: async ({ origin }) => {
+			await scrobbleService.connectShelf(origin);
+		},
+	}),
 );
 
 /**

@@ -1,10 +1,5 @@
 'use strict';
-import LastFmScrobbler from '@/core/scrobbler/lastfm/lastfm-scrobbler';
-import LibreFmScrobbler from '@/core/scrobbler/librefm-scrobbler';
-import ListenBrainzScrobbler from '@/core/scrobbler/listenbrainz/listenbrainz-scrobbler';
-import MalojaScrobbler from '@/core/scrobbler/maloja/maloja-scrobbler';
-import WebhookScrobbler from '@/core/scrobbler/webhook-scrobbler';
-import PleromaScrobbler from '@/core/scrobbler/pleroma/pleroma-scrobbler';
+import ShelfScrobbler from '@/core/scrobbler/shelf-scrobbler';
 import { ServiceCallResult } from '@/core/object/service-call-result';
 import type { BaseSong } from '@/core/object/song';
 import type { ScrobblerSongInfo } from '@/core/scrobbler/base-scrobbler';
@@ -17,25 +12,12 @@ import { getScrobbleStatus } from '../storage/wrapper';
  * Service to handle all scrobbling behavior.
  */
 
-export type Scrobbler =
-	| LastFmScrobbler
-	| LibreFmScrobbler
-	| ListenBrainzScrobbler
-	| MalojaScrobbler
-	| WebhookScrobbler
-	| PleromaScrobbler;
+export type Scrobbler = ShelfScrobbler;
 
 /**
  * Scrobblers that are registered and that can be bound.
  */
-const registeredScrobblers = [
-	new LastFmScrobbler(),
-	new LibreFmScrobbler(),
-	new ListenBrainzScrobbler(),
-	new MalojaScrobbler(),
-	new WebhookScrobbler(),
-	new PleromaScrobbler(),
-];
+const registeredScrobblers = [new ShelfScrobbler()];
 
 export type ScrobblerLabel =
 	| 'Last.fm'
@@ -43,7 +25,8 @@ export type ScrobblerLabel =
 	| 'Libre.fm'
 	| 'Maloja'
 	| 'Webhook'
-	| 'Pleroma';
+	| 'Pleroma'
+	| 'Shelf';
 
 /**
  * Check if scrobbler is in given array of scrobblers.
@@ -233,6 +216,9 @@ class ScrobbleService {
 	): Promise<ServiceCallResult[][]> {
 		debugLog(`Send "scrobble" request: ${this.boundScrobblers.length}`);
 
+		if (this.boundScrobblers.length === 0) {
+			return [new Array<ServiceCallResult>(songs.length).fill(ServiceCallResult.ERROR_AUTH)];
+		}
 		const res = await Promise.all(
 			this.boundScrobblers.map(async (scrobbler) => {
 				// Forward result (including errors) to caller
@@ -304,6 +290,7 @@ class ScrobbleService {
 	 * @returns Found scrobbler object
 	 */
 	getScrobblerByLabel(label: ScrobblerLabel): Scrobbler | null {
+		if (label !== 'Shelf') return null;
 		for (const scrobbler of registeredScrobblers) {
 			if (scrobbler.getLabel() === label) {
 				return scrobbler;
@@ -311,6 +298,12 @@ class ScrobbleService {
 		}
 
 		return null;
+	}
+
+	async connectShelf(origin: string): Promise<void> {
+		const shelf = registeredScrobblers[0];
+		await shelf.connect(origin);
+		this.bindScrobbler(shelf);
 	}
 
 	/**

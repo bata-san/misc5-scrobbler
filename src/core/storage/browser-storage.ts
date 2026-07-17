@@ -167,6 +167,7 @@ const storageTypeMap = {
 	ListenBrainz: LOCAL,
 	Maloja: LOCAL,
 	Webhook: LOCAL,
+	Shelf: LOCAL,
 	Pleroma: LOCAL,
 
 	[NATIVE_SCROBBLER_NOTIFICATION]: LOCAL,

@@ -97,7 +97,6 @@ export const buildStart: UserConfig = {
 		rollupOptions: {
 			input: {
 				popup: resolvePath(root, 'ui', 'popup', 'index.html'),
-				options: resolvePath(root, 'ui', 'options', 'index.html'),
 			},
 		},
 	},

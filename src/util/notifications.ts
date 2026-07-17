@@ -266,10 +266,10 @@ export async function showNowPlaying(
  * @param song - Song instance
  */
 export function clearNowPlaying(song: BaseSong): void {
-	if (!song.metadata.notificationId) {
-		throw new Error('Notification ID is not set');
-	}
 	clearNotificationTimeout();
+	if (!song.metadata.notificationId) {
+		return;
+	}
 	remove(song.metadata.notificationId);
 }
 

@@ -40,6 +40,7 @@ async function main() {
 		build(configs.buildStart),
 		build(configs.buildBackground),
 		build(configs.buildContent),
+		build(configs.buildOptions),
 	];
 	await Promise.all(scripts);
 

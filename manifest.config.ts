@@ -43,6 +43,11 @@ export const common: Manifest.WebExtensionManifest = {
 		512: 'icons/icon_main_512.png',
 	},
 
+	options_ui: {
+		page: 'src/ui/options/index.html',
+		open_in_tab: true,
+	},
+
 	action: getAction(releaseTarget),
 
 	commands: {

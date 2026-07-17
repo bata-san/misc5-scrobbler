@@ -120,3 +120,21 @@ export const buildStart: UserConfig = {
 		minifyImages({ isDev: isDev() }),
 	],
 };
+
+/** MISC5 Shelfの接続状態だけを表示する最小設定画面。 */
+export const buildOptions: UserConfig = {
+	...common,
+	build: {
+		minify: !isDev(),
+		outDir: distRoot(),
+		emptyOutDir: false,
+		watch: isDev() ? watchConfig : null,
+		sourcemap: !isProd(),
+		rollupOptions: {
+			input: {
+				options: resolvePath(root, 'ui', 'options', 'index.html'),
+			},
+		},
+	},
+	plugins: [ConditionalCompile(), solid()],
+};

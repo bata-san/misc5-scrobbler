@@ -562,6 +562,13 @@ setupBackgroundListeners(
 			await injectShelfBridgeForActiveTab();
 		},
 	}),
+
+	backgroundListener({
+		type: 'openShelfOptions',
+		fn: async () => {
+			await browser.runtime.openOptionsPage();
+		},
+	}),
 );
 
 /**

@@ -135,6 +135,10 @@ interface ContentCommunications {
 		payload: undefined;
 		response: void;
 	};
+	openShelfOptions: {
+		payload: undefined;
+		response: void;
+	};
 }
 
 interface BackgroundCommunications {

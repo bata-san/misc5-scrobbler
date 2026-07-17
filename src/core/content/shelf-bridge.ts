@@ -1,6 +1,5 @@
 import { sendContentMessage } from '@/util/communication';
 import type { ShelfConnectionRequest } from '@/core/scrobbler/shelf-scrobbler';
-import browser from 'webextension-polyfill';
 
 const BRIDGE = 'misc5-shelf-extension';
 const PRODUCTION_SHELF_ORIGIN = 'https://misc5-shelf.butter3.workers.dev';
@@ -69,7 +68,10 @@ export function setupShelfBridge() {
 			return;
 		}
 		if (event.data.type === 'open-settings' && event.data.origin === window.location.origin) {
-			void browser.runtime.openOptionsPage();
+			void sendContentMessage({
+				type: 'openShelfOptions',
+				payload: undefined,
+			});
 			return;
 		}
 		if (event.data.type === 'connect' && event.data.origin === window.location.origin) {

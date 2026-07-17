@@ -12,7 +12,7 @@ function reply(type: 'ready' | 'connected' | 'connect-failed', message?: string)
 	window.postMessage({ source: BRIDGE, type, message }, window.location.origin);
 }
 
-// 棚のWebページだけが呼ぶ接続ブリッジ。拡張設定にURLを入力させない。
+// シェルフのWebページだけが呼ぶ接続ブリッジ。拡張設定にURLを入力させない。
 export function setupShelfBridge() {
 	window.addEventListener('message', (event: MessageEvent<BridgeMessage>) => {
 		if (event.source !== window || event.data?.source !== BRIDGE) return;

@@ -24,19 +24,31 @@
 	padding: var(--grid);
 }
 
+.header,
+.shell {
+	margin: 0 auto;
+	max-width: 1200px;
+}
+
 .header {
 	align-items: end;
 	display: flex;
 	justify-content: space-between;
-	margin: 0 auto var(--grid);
-	max-width: 1040px;
+	margin-bottom: var(--grid);
 }
 
-.kicker {
+.kicker,
+.version,
+.sidebarLabel,
+.sectionHeading p {
 	color: var(--content);
 	font: 11px/1 Silkscreen, monospace;
 	letter-spacing: 0.05em;
-	margin: 0 0 12px;
+	margin: 0;
+}
+
+.kicker {
+	margin-bottom: 12px;
 }
 
 h1 {
@@ -45,35 +57,53 @@ h1 {
 	margin: 0;
 }
 
-.version {
-	color: var(--content);
-	font: 10px/1 Silkscreen, monospace;
-	margin: 0;
-	padding-bottom: 4px;
+.shell {
+	display: grid;
+	align-items: start;
+	gap: var(--grid);
+	grid-template-columns: 200px minmax(0, 1fr);
+	padding-bottom: var(--grid);
 }
 
-.layout {
+.sidebar {
+	display: grid;
+	gap: 1px;
+	position: sticky;
+	top: var(--grid);
+}
+
+.sidebarLabel {
+	margin-bottom: 12px;
+}
+
+.sidebar button {
+	background: var(--surface);
+	border: 1px solid var(--hairline);
+	color: var(--content);
+	cursor: pointer;
+	font: 11px/1.1 Silkscreen, monospace;
+	letter-spacing: 0.03em;
+	padding: 14px 12px;
+	text-align: left;
+}
+
+.sidebar button:hover,
+.sidebar button:focus-visible {
+	border-color: var(--ink);
+	color: var(--ink);
+	outline: none;
+}
+
+.content {
 	display: grid;
 	gap: var(--grid);
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	margin: 0 auto calc(var(--grid) * 2);
-	max-width: 1040px;
 }
 
 .section {
+	scroll-margin-top: var(--grid);
 	background: var(--surface);
 	border: 1px solid var(--hairline);
-	min-height: 320px;
 	padding: var(--grid);
-	position: relative;
-}
-
-.wide {
-	min-height: auto;
-
-	.toggleList {
-		border-top: 1px solid var(--hairline);
-	}
 }
 
 .sectionHeading {
@@ -81,13 +111,6 @@ h1 {
 	display: flex;
 	gap: 9px;
 	margin-bottom: var(--grid);
-
-	p {
-		color: var(--content);
-		font: 11px/1 Silkscreen, monospace;
-		letter-spacing: 0.04em;
-		margin: 0;
-	}
 }
 
 .signal {
@@ -116,7 +139,7 @@ h2 {
 	color: var(--content);
 	font: 14px/1.6 Inter, Arial, sans-serif;
 	margin: 0;
-	max-width: 34ch;
+	max-width: 48ch;
 }
 
 .account {
@@ -130,7 +153,7 @@ h2 {
 	align-items: baseline;
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: 16px;
+	margin: 28px 0 16px;
 
 	label,
 	output {
@@ -151,6 +174,12 @@ h2 {
 	accent-color: var(--ink);
 	margin: 0 0 20px;
 	width: 100%;
+}
+
+.toggleList,
+.connectorList {
+	border-top: 1px solid var(--hairline);
+	margin-top: 28px;
 }
 
 .toggleRow {
@@ -218,21 +247,19 @@ h2 {
 	}
 }
 
-.cta {
-	background: #ffc700;
-	bottom: var(--grid);
+.search {
+	width: 100%;
+	margin-top: 28px;
+	border: 1px solid var(--hairline);
+	background: var(--bg);
 	color: var(--ink);
-	font: 11px/1 Silkscreen, monospace;
-	letter-spacing: 0.04em;
-	padding: 12px 14px;
-	position: fixed;
-	right: var(--grid);
-	text-decoration: none;
+	font: 14px/1 Inter, Arial, sans-serif;
+	padding: 12px;
 }
 
-.cta:focus-visible {
-	outline: 2px solid var(--signal);
-	outline-offset: 2px;
+.search:focus {
+	border-color: var(--ink);
+	outline: none;
 }
 
 @keyframes pulse {
@@ -245,15 +272,9 @@ h2 {
 	}
 }
 
-@media (max-width: 720px) {
+@media (max-width: 760px) {
 	.page {
-		padding: var(--grid);
-	}
-
-	.header,
-	.layout {
-		grid-template-columns: 1fr;
-		max-width: 100%;
+		padding: 20px;
 	}
 
 	.header {
@@ -266,12 +287,20 @@ h2 {
 		font-size: 42px;
 	}
 
-	.layout {
-		display: grid;
+	.shell {
+		grid-template-columns: 1fr;
+	}
+
+	.sidebar {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		position: static;
+	}
+
+	.sidebarLabel {
+		grid-column: 1 / -1;
 	}
 
 	.section {
-		min-height: 0;
 		padding: 28px;
 	}
 }

@@ -23,11 +23,15 @@ export const SCROBBLE_EDITED_TRACKS_ONLY = 'scrobbleEditedTracksOnly';
 export const SCROBBLE_PERCENT = 'scrobblePercent';
 export const DISABLED_CONNECTORS = 'disabledConnectors';
 export const DEBUG_LOGGING_ENABLED = 'debugLoggingEnabled';
+// MISC5専用の初期値を一度だけ移行するための内部バージョン。設定画面には出さない。
+export const MISC5_SYNC_DEFAULTS_VERSION = 'misc5SyncDefaultsVersion';
 export const ALBUM_GUESSING_DISABLED = 'albumGuessingDisabled';
 export const ALBUM_GUESSING_UNEDITED_ONLY = 'albumGuessingUneditedOnly';
 export const ALBUM_GUESSING_ALL_TRACKS = 'albumGuessingAllTracks';
 
 export interface GlobalOptions {
+	[MISC5_SYNC_DEFAULTS_VERSION]: number;
+
 	/**
 	 * Force song recognition.
 	 */
@@ -109,7 +113,8 @@ const DEFAULT_OPTIONS: GlobalOptions = {
 	[SCROBBLE_PODCASTS]: true,
 	[USE_NOTIFICATIONS]: true,
 	[USE_UNRECOGNIZED_SONG_NOTIFICATIONS]: false,
-	[SCROBBLE_RECOGNIZED_TRACKS]: true,
+	// MISC5では外部サービス照合を必須にせず、取得できた曲情報を自動同期する。
+	[SCROBBLE_RECOGNIZED_TRACKS]: false,
 	[SCROBBLE_EDITED_TRACKS_ONLY]: false,
 	[DEBUG_LOGGING_ENABLED]: false,
 	[SCROBBLE_PERCENT]: DEFAULT_SCROBBLE_PERCENT,
@@ -119,6 +124,7 @@ const DEFAULT_OPTIONS: GlobalOptions = {
 	[ALBUM_GUESSING_UNEDITED_ONLY]: true,
 	[ALBUM_GUESSING_ALL_TRACKS]: false,
 	[DISABLED_CONNECTORS]: {},
+	[MISC5_SYNC_DEFAULTS_VERSION]: 1,
 };
 
 const OVERRIDE_CONTENT = {
@@ -181,6 +187,12 @@ export type SavedEdit = {
  */
 async function setupDefaultConfigValues() {
 	const data = { ...DEFAULT_OPTIONS, ...(await options.get()) };
+	// 0.1.0〜0.1.2では本家の「認識済みのみ」を引き継いでいたため、曲を手動登録しないと
+	// 同期できなかった。既存インストールも一度だけMISC5向けの自動同期設定へ移行する。
+	if (data[MISC5_SYNC_DEFAULTS_VERSION] < 1) {
+		data[SCROBBLE_RECOGNIZED_TRACKS] = false;
+		data[MISC5_SYNC_DEFAULTS_VERSION] = 1;
+	}
 
 	await options.set(data);
 	void options.debugLog([DISABLED_CONNECTORS]);

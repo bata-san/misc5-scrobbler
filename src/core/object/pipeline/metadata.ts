@@ -80,9 +80,13 @@ export async function process(
 		Options.SCROBBLE_EDITED_TRACKS_ONLY,
 		connector.id,
 	);
+	const scrobbleRecognizedTracks = await Options.getOption(
+		Options.SCROBBLE_RECOGNIZED_TRACKS,
+		connector.id,
+	);
 
 	song.flags.isValid =
-		(isSongValid || Boolean(forceRecognize)) &&
+		(isSongValid || !scrobbleRecognizedTracks || Boolean(forceRecognize)) &&
 		(song.flags.isCorrectedByUser || !scrobbleEditedTracksOnly);
 }
 

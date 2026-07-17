@@ -50,12 +50,12 @@ async function makeChallenge(verifier: string): Promise<string> {
 function normalizeOrigin(value: string): string {
 	const url = new URL(value);
 	if (url.protocol !== 'https:' && !(url.protocol === 'http:' && url.hostname === 'localhost')) {
-		throw new Error('安全な棚のURLではありません。');
+		throw new Error('安全なシェルフURLではありません。');
 	}
 	return url.origin;
 }
 
-/** 棚アプリだけへ送信するscrobbler。ユーザーがURLやWebhookを設定する必要はない。 */
+/** シェルフへ送信するscrobbler。ユーザーがURLやWebhookを設定する必要はない。 */
 export default class ShelfScrobbler extends BaseScrobbler<'Shelf'> {
 	public isLocalOnly = true;
 
@@ -77,7 +77,7 @@ export default class ShelfScrobbler extends BaseScrobbler<'Shelf'> {
 
 	async getSession(): Promise<SessionData> {
 		const connection = await this.getConnection();
-		if (!connection) return Promise.reject(new Error('棚が未接続です。'));
+		if (!connection) return Promise.reject(new Error('シェルフが未接続です。'));
 		return { sessionID: connection.deviceId, sessionName: connection.account };
 	}
 
@@ -186,7 +186,11 @@ export default class ShelfScrobbler extends BaseScrobbler<'Shelf'> {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(body),
 		});
-		if (!response.ok) throw new Error('棚への接続に失敗しました。');
+		if (!response.ok) {
+			const detail = (await response.text()).slice(0, 160);
+			this.debugLog(`Token request failed (${response.status}): ${detail}`, 'error');
+			throw new Error('シェルフへの接続に失敗しました。もう一度、同期を許可してください。');
+		}
 		return (await response.json()) as TokenResponse;
 	}
 
@@ -216,8 +220,11 @@ export default class ShelfScrobbler extends BaseScrobbler<'Shelf'> {
 				connection = await this.refresh(connection);
 				response = await this.postEvent(connection, request);
 			}
-			return response.ok ? ServiceCallResult.RESULT_OK : ServiceCallResult.ERROR_OTHER;
-		} catch {
+			if (response.ok) return ServiceCallResult.RESULT_OK;
+			this.debugLog(`Event request failed (${response.status})`, 'error');
+			return response.status === 401 ? ServiceCallResult.ERROR_AUTH : ServiceCallResult.ERROR_OTHER;
+		} catch (error) {
+			this.debugLog(`Event request failed: ${String(error)}`, 'error');
 			return ServiceCallResult.ERROR_OTHER;
 		}
 	}

@@ -9,7 +9,7 @@ export const common: Manifest.WebExtensionManifest = {
 	manifest_version: 3,
 	name: 'MISC5 Shelf',
 	default_locale: 'en',
-	description: '__MSG_extDescription__',
+	description: 'Sync music playback to MISC5 Shelf.',
 	version: pkg.version,
 
 	permissions: ['storage', 'identity', 'contextMenus', 'notifications', 'scripting'],

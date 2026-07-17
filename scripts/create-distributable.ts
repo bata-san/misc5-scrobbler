@@ -34,7 +34,7 @@ export default async function createDistributable() {
 
 	colorLog(`Creating distributable for ${releaseTarget}`, 'info');
 	const curDir = path.resolve(path.dirname(''));
-	const outputFile = `${curDir}/web-scrobbler-${releaseTarget}.zip`;
+	const outputFile = `${curDir}/misc5-scrobbler-${releaseTarget}.zip`;
 	const output = fs.createWriteStream(outputFile);
 
 	const archive = archiver('zip', {

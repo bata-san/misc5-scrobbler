@@ -78,18 +78,23 @@ function Toggle(props: {
 	checked: boolean;
 	onChange: (checked: boolean) => void;
 }) {
+	const state = () => (props.checked ? 'ON' : 'OFF');
 	return (
-		<label class={styles.toggleRow}>
+		<label class={styles.toggleRow} data-state={state()}>
 			<span>
 				<strong>{props.label}</strong>
 				<small>{props.detail}</small>
 			</span>
-			<input
-				type="checkbox"
-				checked={props.checked}
-				onInput={(event) => props.onChange(event.currentTarget.checked)}
-			/>
-			<i aria-hidden="true" />
+			<span class={styles.toggleControl}>
+				<input
+					type="checkbox"
+					aria-label={`${props.label}: ${state()}`}
+					checked={props.checked}
+					onInput={(event) => props.onChange(event.currentTarget.checked)}
+				/>
+				<span class={styles.toggleState} aria-hidden="true">{state()}</span>
+				<i aria-hidden="true" />
+			</span>
 		</label>
 	);
 }

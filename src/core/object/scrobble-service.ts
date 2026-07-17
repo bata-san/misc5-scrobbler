@@ -1,5 +1,7 @@
 'use strict';
-import ShelfScrobbler from '@/core/scrobbler/shelf-scrobbler';
+import ShelfScrobbler, {
+	type ShelfConnectionRequest,
+} from '@/core/scrobbler/shelf-scrobbler';
 import { ServiceCallResult } from '@/core/object/service-call-result';
 import type { BaseSong } from '@/core/object/song';
 import type { ScrobblerSongInfo } from '@/core/scrobbler/base-scrobbler';
@@ -300,9 +302,18 @@ class ScrobbleService {
 		return null;
 	}
 
-	async connectShelf(origin: string): Promise<void> {
+	async startShelfConnection(origin: string): Promise<ShelfConnectionRequest> {
 		const shelf = registeredScrobblers[0];
-		await shelf.connect(origin);
+		return shelf.startConnection(origin);
+	}
+
+	async finishShelfConnection(
+		origin: string,
+		code: string,
+		state: string,
+	): Promise<void> {
+		const shelf = registeredScrobblers[0];
+		await shelf.finishConnection(origin, code, state);
 		this.bindScrobbler(shelf);
 	}
 

@@ -532,9 +532,16 @@ setupBackgroundListeners(
 	}),
 
 	backgroundListener({
-		type: 'shelfConnect',
+		type: 'shelfStartConnection',
 		fn: async ({ origin }) => {
-			await scrobbleService.connectShelf(origin);
+			return scrobbleService.startShelfConnection(origin);
+		},
+	}),
+
+	backgroundListener({
+		type: 'shelfFinishConnection',
+		fn: async ({ origin, code, state }) => {
+			await scrobbleService.finishShelfConnection(origin, code, state);
 		},
 	}),
 );

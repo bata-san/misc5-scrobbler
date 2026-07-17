@@ -33,6 +33,13 @@ type TokenResponse = {
 	expiresIn: number;
 };
 
+export type ShelfConnectionRequest = {
+	origin: string;
+	redirectUri: string;
+	state: string;
+	codeChallenge: string;
+};
+
 function toBase64Url(bytes: Uint8Array): string {
 	let binary = '';
 	for (const byte of bytes) binary += String.fromCharCode(byte);
@@ -97,31 +104,48 @@ export default class ShelfScrobbler extends BaseScrobbler<'Shelf'> {
 		return {};
 	}
 
-	async connect(originValue: string): Promise<void> {
+	// 認可ポップアップを開かず、ログイン済みのシェルフページへPKCE情報だけを渡す。
+	// verifierは拡張ストレージにだけ置くため、ページが一回限りのcodeを見てもtokenは交換できない。
+	async startConnection(originValue: string): Promise<ShelfConnectionRequest> {
 		const origin = normalizeOrigin(originValue);
 		const redirectUri = browser.identity.getRedirectURL('misc5-shelf');
 		const verifier = makeVerifier();
 		const state = makeVerifier();
-		const authorizeUrl = new URL('/api/extension/authorize', origin);
-		authorizeUrl.searchParams.set('redirect_uri', redirectUri);
-		authorizeUrl.searchParams.set('state', state);
-		authorizeUrl.searchParams.set('code_challenge', await makeChallenge(verifier));
-
-		const responseUrl = await browser.identity.launchWebAuthFlow({
-			url: authorizeUrl.toString(),
-			interactive: true,
+		const codeChallenge = await makeChallenge(verifier);
+		const stored = await this.storage.get();
+		await this.storage.set({
+			...(stored ?? {}),
+			pendingAuthorization: {
+				origin,
+				redirectUri,
+				state,
+				verifier,
+				expiresAt: Date.now() + 2 * 60 * 1000,
+			},
 		});
-		if (!responseUrl) throw new Error('認可が完了しませんでした。');
-		const result = new URL(responseUrl);
-		const code = result.searchParams.get('code');
-		if (!code || result.searchParams.get('state') !== state) {
-			throw new Error('認可結果を確認できませんでした。');
+		return { origin, redirectUri, state, codeChallenge };
+	}
+
+	async finishConnection(originValue: string, code: string, state: string): Promise<void> {
+		const origin = normalizeOrigin(originValue);
+		const stored = await this.storage.get();
+		const pending = stored?.pendingAuthorization;
+		if (
+			!pending ||
+			pending.origin !== origin ||
+			pending.state !== state ||
+			pending.expiresAt < Date.now()
+		) {
+			await this.storage.set(
+				stored?.connection ? { connection: stored.connection } : {},
+			);
+			throw new Error('接続の有効期限が切れました。もう一度、同期を許可してください。');
 		}
 		const tokens = await this.requestTokens(origin, {
 			grant_type: 'authorization_code',
 			code,
-			code_verifier: verifier,
-			redirect_uri: redirectUri,
+			code_verifier: pending.verifier,
+			redirect_uri: pending.redirectUri,
 		});
 		await this.saveTokens(origin, tokens);
 	}
@@ -230,11 +254,14 @@ export default class ShelfScrobbler extends BaseScrobbler<'Shelf'> {
 	}
 
 	private postEvent(connection: ShelfConnection, request: ShelfRequest): Promise<Response> {
-		return fetch(new URL('/api/extension/events', connection.origin), {
+		// 送信先は従来のWeb Scrobbler webhook URL。端末bearerを添えることで、ログインした
+		// アカウントだけへ安全に書き込みつつ、既存のWebhook payload互換を維持する。
+		return fetch(new URL('/api/scrobble', connection.origin), {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${connection.accessToken}`,
 				'Content-Type': 'application/json',
+				'X-MISC5-Extension': '1',
 			},
 			body: JSON.stringify(request),
 		});

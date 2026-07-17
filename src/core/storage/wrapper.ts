@@ -71,6 +71,13 @@ export type ShelfModel = {
 		refreshToken: string;
 		expiresAt: number;
 	};
+	pendingAuthorization?: {
+		origin: string;
+		redirectUri: string;
+		state: string;
+		verifier: string;
+		expiresAt: number;
+	};
 };
 
 export type ArrayProperty = {

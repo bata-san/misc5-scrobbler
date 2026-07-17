@@ -212,36 +212,58 @@ h2 {
 		width: 1px;
 	}
 
+	.toggleControl {
+		align-items: center;
+		display: flex;
+		flex: 0 0 auto;
+		gap: 10px;
+		justify-content: flex-end;
+		min-width: 94px;
+	}
+
+	.toggleState {
+		color: var(--content);
+		font: 10px/1 Silkscreen, monospace;
+		letter-spacing: 0.05em;
+		text-align: right;
+		width: 28px;
+	}
+
 	i {
 		background: var(--bg);
 		border: 1px solid var(--hairline);
 		display: block;
-		height: 20px;
+		height: 24px;
 		position: relative;
-		width: 40px;
+		width: 48px;
 
 		&::after {
 			background: var(--content);
 			content: '';
-			height: 10px;
+			height: 14px;
 			left: 4px;
 			position: absolute;
 			top: 4px;
 			transition: transform 0.15s ease;
-			width: 10px;
+			width: 14px;
 		}
 	}
 
-	input:checked + i {
+	&[data-state='ON'] .toggleState {
+		color: var(--ink);
+	}
+
+	input:checked ~ i {
+		background: var(--ink);
 		border-color: var(--ink);
 
 		&::after {
-			background: var(--ink);
-			transform: translateX(20px);
+			background: var(--bg);
+			transform: translateX(24px);
 		}
 	}
 
-	input:focus-visible + i {
+	input:focus-visible ~ i {
 		outline: 2px solid var(--signal);
 		outline-offset: 2px;
 	}

@@ -4,6 +4,7 @@ import type { ControllerModeStr } from '@/core/object/controller/controller';
 import type { ServiceCallResult } from '@/core/object/service-call-result';
 import type { CloneableSong } from '@/core/object/song';
 import type { ScrobblerSongInfo } from '@/core/scrobbler/base-scrobbler';
+import type { ShelfConnectionRequest } from '@/core/scrobbler/shelf-scrobbler';
 import type { ManagerTab } from '@/core/storage/wrapper';
 import browser from 'webextension-polyfill';
 
@@ -122,8 +123,12 @@ interface ContentCommunications {
 		payload: undefined;
 		response: boolean;
 	};
-	shelfConnect: {
+	shelfStartConnection: {
 		payload: { origin: string };
+		response: ShelfConnectionRequest;
+	};
+	shelfFinishConnection: {
+		payload: { origin: string; code: string; state: string };
 		response: void;
 	};
 }

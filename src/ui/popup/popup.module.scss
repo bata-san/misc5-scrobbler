@@ -25,6 +25,65 @@
 	width: 300px;
 }
 
+.shelfPopup {
+	background-color: #fcfcfc;
+	background-image: radial-gradient(circle, #dadada 1px, transparent 1px);
+	background-size: 20px 20px;
+	box-sizing: border-box;
+	color: #161616;
+	font-family: Inter, Arial, sans-serif;
+	padding: 20px;
+	text-align: left;
+
+	h1 {
+		font: 700 24px/1.05 'Space Grotesk', Arial, sans-serif;
+		letter-spacing: -0.04em;
+		margin: 0 0 10px;
+	}
+
+	p:not(.shelfMeta) {
+		color: #555;
+		font-size: 13px;
+		line-height: 1.6;
+		margin: 0 0 18px;
+	}
+}
+
+.shelfMeta {
+	align-items: center;
+	color: #555;
+	display: flex;
+	font: 10px/1 Silkscreen, monospace;
+	letter-spacing: 0.05em;
+	margin: 0 0 14px;
+}
+
+.shelfMeta::before {
+	background: #ff3131;
+	border-radius: 50%;
+	box-shadow: 0 0 6px 1px rgb(255 49 49 / 55%);
+	content: '';
+	height: 6px;
+	margin-right: 8px;
+	width: 6px;
+}
+
+.shelfAction {
+	background: #ffc700;
+	border: 1px solid #161616;
+	color: #161616;
+	cursor: pointer;
+	font: 600 11px/1 Inter, Arial, sans-serif;
+	min-height: 40px;
+	padding: 0 12px;
+	width: 100%;
+
+	&:focus-visible {
+		outline: 2px solid #ff3131;
+		outline-offset: 2px;
+	}
+}
+
 .widePopup {
 	width: 400px;
 }

@@ -7,6 +7,7 @@ import { Anchor } from '../components/util';
 import styles from './settings.module.scss';
 
 const PRIVACY_POLICY_URL = 'https://misc5-shelf.butter3.workers.dev/privacy';
+const SHELF_APP_URL = 'https://misc5-shelf.butter3.workers.dev/';
 const PLAYBACK_ORIGINS = ['http://*/*', 'https://*/*'];
 
 type ShelfConnection = { account: string };
@@ -133,9 +134,14 @@ function Settings() {
 		);
 	};
 	const requestPlaybackAccess = () => {
-		void browser.permissions.request({ origins: PLAYBACK_ORIGINS }).then(() =>
-			refetchPlaybackAccess(),
-		);
+		void browser.permissions
+			.request({ origins: PLAYBACK_ORIGINS })
+			.then(async (granted) => {
+				await refetchPlaybackAccess();
+				if (granted) {
+					await browser.tabs.create({ url: SHELF_APP_URL });
+				}
+			});
 	};
 	const jumpTo = (id: string) => {
 		document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });

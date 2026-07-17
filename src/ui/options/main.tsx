@@ -3,7 +3,10 @@ import { createResource, createSignal, For, Show } from 'solid-js';
 import browser from 'webextension-polyfill';
 import connectors, { type ConnectorMeta } from '@/core/connectors';
 import * as Options from '@/core/storage/options';
+import { Anchor } from '../components/util';
 import styles from './settings.module.scss';
+
+const PRIVACY_POLICY_URL = 'https://misc5-shelf.butter3.workers.dev/privacy';
 
 type ShelfConnection = { account: string };
 type ShelfStorage = { Shelf?: { connection?: ShelfConnection } };
@@ -260,6 +263,13 @@ function Settings() {
 								onChange={(value) => updateBoolean(Options.DEBUG_LOGGING_ENABLED, value)}
 							/>
 						</div>
+						<Anchor
+							class={styles.privacyLink}
+							href={PRIVACY_POLICY_URL}
+							target="_blank"
+						>
+							プライバシーポリシーを見る ↗
+						</Anchor>
 					</section>
 				</div>
 			</div>

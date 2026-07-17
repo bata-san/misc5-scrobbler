@@ -284,6 +284,26 @@ h2 {
 	outline: none;
 }
 
+.privacyLink {
+	align-items: center;
+	background: var(--bg);
+	border: 1px solid var(--hairline);
+	color: var(--content);
+	display: inline-flex;
+	font: 11px/1 Silkscreen, monospace;
+	letter-spacing: 0.03em;
+	margin-top: 28px;
+	padding: 12px 14px;
+	text-decoration: none;
+}
+
+.privacyLink:hover,
+.privacyLink:focus-visible {
+	border-color: var(--ink);
+	color: var(--ink);
+	outline: none;
+}
+
 @keyframes pulse {
 	0%,
 	100% {

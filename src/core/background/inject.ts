@@ -1,6 +1,16 @@
 import { getConnectorByUrl } from '@/util/util-connector';
 import browser from 'webextension-polyfill';
 
+const SHELF_APP_ORIGIN = 'https://misc5-shelf.butter3.workers.dev';
+
+function isShelfAppUrl(url: string): boolean {
+	try {
+		return new URL(url).origin === SHELF_APP_ORIGIN;
+	} catch {
+		return false;
+	}
+}
+
 /**
  * Attempts to inject the connector into the page.
  *
@@ -35,6 +45,16 @@ async function attemptInjectTab(tab: browser.Tabs.Tab) {
  * @returns A promise that resolves when the connector is injected
  */
 async function injectConnector(tabId: number, url: string) {
+	// The Shelf page has no playback connector, but it uses the same content
+	// entrypoint for its page <-> extension device-auth bridge. Re-inject it
+	// after an extension update so an already-open login page works immediately.
+	if (isShelfAppUrl(url)) {
+		return browser.scripting.executeScript({
+			target: { tabId },
+			files: ['content/main.js'],
+		});
+	}
+
 	const connector = await getConnectorByUrl(url);
 
 	if (!connector) {

@@ -85,6 +85,12 @@ const MAJOR_CONNECTOR_IDS = new Set([
 	'hoopladigital', 'idagio', 'invidious', 'piped', 'rainwave',
 ]);
 
+// The MISC5 app is not a playback connector, but its login-complete screen
+// needs this content script for the page <-> extension device-auth bridge.
+// Keep this explicit origin outside the connector allow-list so reducing
+// playback-site permissions can never silently break account connection.
+const SHELF_APP_MATCHES = ['https://misc5-shelf.butter3.workers.dev/*'];
+
 /**
  * The exact set of sites the content script (and its programmatic
  * re-injection on reload, see core/background/inject.ts) needs to run on,
@@ -109,7 +115,7 @@ const MAJOR_CONNECTOR_IDS = new Set([
  *    optional-permission prompt — not done here, so Amazon Music currently
  *    relies on that prompt too despite being "major".
  */
-const siteMatches = Array.from(
+const connectorMatches = Array.from(
 	new Set(
 		connectors
 			.filter((c) => MAJOR_CONNECTOR_IDS.has(c.id))
@@ -119,6 +125,8 @@ const siteMatches = Array.from(
 			.filter((pattern) => MATCH_PATTERN_RE.test(pattern)),
 	),
 );
+
+const siteMatches = Array.from(new Set([...connectorMatches, ...SHELF_APP_MATCHES]));
 
 /**
  * Common properties between all browsers manifests

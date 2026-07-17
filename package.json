@@ -1,8 +1,9 @@
 {
 	"name": "misc5-scrobbler",
-	"version": "0.1.4",
-  "author": "David Šabata <posta@davidsabata.cz>",
+	"version": "0.1.5",
+  "author": "Butter <youguitest@gmail.com>",
   "contributors": [
+    "David Šabata <posta@davidsabata.cz>",
     "@mountainash (https://mountainash.id.au/)"
   ],
 	"description": "Sync music playback to MISC5 Shelf.",

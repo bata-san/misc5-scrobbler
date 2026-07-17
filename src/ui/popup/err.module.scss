@@ -1,0 +1,93 @@
+// シェルフ本体(glb-test)の意匠に合わせたエラーポップアップ。マット・フラット、影やblurなし、
+// 1pxのhairlineだけで区切る。フォント名はWebアプリ/設定画面と同じ('Space Grotesk'/Silkscreen/
+// Inter)を指定しているが、拡張機能はこれらを同梱していないため通常はフォールバック
+// (Arial/monospace)で表示される — settings.module.scssの既存パターンに合わせている。
+
+.card {
+	width: 320px;
+	padding: 20px;
+	background-color: #fcfcfc;
+	background-image: radial-gradient(circle, #dadada 1px, transparent 1px);
+	background-size: 20px 20px;
+	color: #161616;
+	font-family: Inter, Arial, sans-serif;
+}
+
+.meta {
+	align-items: center;
+	display: flex;
+	gap: 9px;
+	margin: 0 0 14px;
+}
+
+.dot {
+	animation: pulse 1.1s ease-in-out infinite;
+	background: #ff3131;
+	border-radius: 50%;
+	box-shadow: 0 0 6px 1px rgb(255 49 49 / 55%);
+	flex: 0 0 auto;
+	height: 6px;
+	width: 6px;
+}
+
+.kicker {
+	color: #555;
+	font: 11px/1 Silkscreen, monospace;
+	letter-spacing: 0.04em;
+}
+
+.headline {
+	font: 700 26px/1.05 'Space Grotesk', Arial, sans-serif;
+	letter-spacing: -0.04em;
+	margin: 0 0 10px;
+}
+
+.copy {
+	color: #555;
+	font: 13px/1.6 Inter, Arial, sans-serif;
+	margin: 0 0 18px;
+}
+
+.action {
+	align-items: center;
+	background: #ffc700;
+	border: 1px solid #161616;
+	color: #161616;
+	cursor: pointer;
+	display: flex;
+	font: 600 11px/1 Inter, Arial, sans-serif;
+	gap: 8px;
+	justify-content: center;
+	letter-spacing: 0.02em;
+	min-height: 40px;
+	padding: 0 12px;
+	text-decoration: none;
+	width: 100%;
+
+	svg {
+		height: 14px;
+		width: 14px;
+	}
+}
+
+.action:focus-visible {
+	outline: 2px solid #ff3131;
+	outline-offset: 2px;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.3;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dot {
+		animation: none;
+	}
+}

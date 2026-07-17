@@ -76,7 +76,17 @@ a {
 }
 
 .nowPlayingPopup {
-	background-color: transparent;
+	// MISC5ブランドのマット・フラット意匠(options/settings.module.scss、err.module.scssと
+	// 同じ固定トークン)。テーマシステム(--text/--last-fm等、ダーク/ハイコントラスト切替)には
+	// 参加しない — 他のMISC5面と同じく常に同じ見た目にする、という既存方針に合わせている。
+	--bg: #fcfcfc;
+	--surface: #f2f2f2;
+	--hairline: #e2e2e2;
+	--ink: #161616;
+	--content: #555;
+	--signal: #ff3131;
+
+	background-color: var(--bg);
 	display: flex;
 	overflow: hidden;
 	width: max-content;
@@ -85,13 +95,14 @@ a {
 		// set a very low height here. This prevents image from expanding uncontrollably.
 		// The entire image still remains clickable link (overflow).
 		height: 10px;
+		position: relative;
 
 		.coverArtBackground {
 			background-size: cover;
+			border: 1px solid var(--hairline);
 
 			.coverArt {
 				aspect-ratio: 1 / 1;
-				backdrop-filter: blur(5px);
 				object-fit: contain;
 				width: 100vh;
 			}
@@ -101,29 +112,58 @@ a {
 	.songDetails {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25em;
+		gap: 0.35em;
 		max-width: 50ch;
 		min-width: 30ch;
 		overflow: hidden;
-		padding: 0.5em 1em;
+		padding: 14px 16px;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 
 		a {
+			color: var(--ink);
 			white-space: nowrap;
 			width: fit-content;
 		}
 
 		.editField {
-			border: 1px solid var(--text);
-			border-radius: 3px;
+			border: 1px solid var(--hairline);
+			color: var(--ink);
 			padding: 0.15em 0.25em;
 		}
 	}
 
+	.meta {
+		align-items: center;
+		display: flex;
+		gap: 8px;
+		margin: 0 0 2px;
+	}
+
+	.dot {
+		background: var(--signal);
+		border-radius: 50%;
+		box-shadow: 0 0 6px 1px rgb(255 49 49 / 55%);
+		flex: 0 0 auto;
+		height: 5px;
+		width: 5px;
+	}
+
+	.kicker {
+		color: var(--content);
+		font: 10px/1 Silkscreen, monospace;
+		letter-spacing: 0.05em;
+	}
+
+	.bold {
+		font: 700 15px/1.2 'Space Grotesk', Arial, sans-serif;
+		letter-spacing: -0.01em;
+	}
+
 	.playDetails {
 		display: flex;
-		gap: 0.5em;
+		gap: 6px;
+		margin-top: 2px;
 	}
 
 	.playCount {
@@ -132,30 +172,34 @@ a {
 		gap: 0.25em;
 
 		svg {
-			fill: var(--active-text);
-			height: 1.2em;
-			width: 1.2em;
+			fill: var(--ink);
+			height: 1.1em;
+			width: 1.1em;
 		}
 	}
 
-	.label {
-		background-color: var(--last-fm);
-		border-radius: 0.25em;
-		color: var(--active-text);
-		padding: 0.25em 0.5em;
+	.label,
+	.playCount {
+		background-color: var(--surface);
+		border: 1px solid var(--hairline);
+		color: var(--ink);
+		font: 10px/1 Silkscreen, monospace;
+		letter-spacing: 0.03em;
+		padding: 4px 6px;
 	}
 
 	.controlButtons {
 		display: flex;
-		margin-top: 0.5em;
+		gap: 4px;
+		margin-top: 8px;
 
 		.controlButton {
-			--icon-color: var(--text);
-			background-color: transparent;
-			border: var(--interactable-border);
+			--icon-color: var(--ink);
+			background-color: var(--bg);
+			border: 1px solid var(--hairline);
 			color: var(--icon-color);
 			cursor: pointer;
-			padding: 0.25em 0.5em;
+			padding: 5px 7px;
 
 			.applyFill {
 				fill: var(--icon-color);
@@ -163,7 +207,13 @@ a {
 
 			&:hover,
 			&.active {
-				--icon-color: var(--last-fm);
+				--icon-color: var(--signal);
+				border-color: var(--signal);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--signal);
+				outline-offset: 1px;
 			}
 
 			&:not(:hover) .hover {
@@ -178,7 +228,8 @@ a {
 				cursor: not-allowed;
 
 				&:not(.hiddenDisabled) {
-					--icon-color: var(--checkbox-inactive);
+					--icon-color: var(--hairline);
+					border-color: var(--hairline);
 				}
 			}
 		}

@@ -4,6 +4,7 @@
 // (Arial/monospace)で表示される — settings.module.scssの既存パターンに合わせている。
 
 .card {
+	box-sizing: border-box;
 	width: 320px;
 	padding: 20px;
 	background-color: #fcfcfc;
@@ -11,6 +12,10 @@
 	background-size: 20px 20px;
 	color: #161616;
 	font-family: Inter, Arial, sans-serif;
+
+	* {
+		box-sizing: border-box;
+	}
 }
 
 .meta {
@@ -34,6 +39,7 @@
 	color: #555;
 	font: 11px/1 Silkscreen, monospace;
 	letter-spacing: 0.04em;
+	overflow-wrap: anywhere;
 }
 
 .headline {
@@ -46,6 +52,7 @@
 	color: #555;
 	font: 13px/1.6 Inter, Arial, sans-serif;
 	margin: 0 0 18px;
+	overflow-wrap: anywhere;
 }
 
 .action {

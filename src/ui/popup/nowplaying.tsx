@@ -206,6 +206,7 @@ function SongDetails(props: {
 }) {
 	return (
 		<div class={styles.songDetails}>
+			<StateMeta tab={props.tab} />
 			<TrackData song={props.song} />
 			<Show when={isIos()}>
 				<IOSLoveTrack song={props.song} tab={props.tab} />
@@ -219,6 +220,31 @@ function SongDetails(props: {
 				/>
 			</Show>
 		</div>
+	);
+}
+
+const STATE_LABELS: Partial<Record<string, string>> = {
+	[ControllerMode.Playing]: 'PLAYING',
+	[ControllerMode.Paused]: 'PAUSED',
+	[ControllerMode.Skipped]: 'SKIPPED',
+	[ControllerMode.Scrobbled]: 'SCROBBLED',
+	[ControllerMode.Loved]: 'LOVED',
+	[ControllerMode.Unloved]: 'UNLOVED',
+};
+
+/**
+ * The signal-dot + state kicker line shared by every MISC5-branded surface
+ * (options page's .sectionHeading, err.tsx's .meta, the web app's
+ * .extension-meta) — kept here too so the now-playing card reads as the
+ * same product instead of the stock Web Scrobbler look.
+ */
+function StateMeta(props: { tab: Resource<ManagerTab> }) {
+	const label = () => STATE_LABELS[props.tab()?.mode ?? ''] ?? 'PLAYING';
+	return (
+		<p class={styles.meta}>
+			<span class={styles.dot} aria-hidden="true" />
+			<span class={styles.kicker}>SHELF / {label()}</span>
+		</p>
 	);
 }
 

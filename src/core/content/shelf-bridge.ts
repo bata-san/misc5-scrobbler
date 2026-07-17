@@ -16,6 +16,18 @@ function reply(type: 'ready' | 'connected' | 'connect-failed', message?: string)
 	window.postMessage({ source: BRIDGE, type, message }, window.location.origin);
 }
 
+// 拡張機能が更新/再読み込みされると、既に開いていたタブのcontent scriptは
+// バックグラウンドとの接続が切れ、runtime.sendMessageが
+// "Extension context invalidated." という生の英語エラーを投げる。原因はページの古さ
+// であって接続自体の失敗ではないので、そのまま出さずに再読み込みを促す文言に変換する。
+function friendlyMessage(error: unknown): string {
+	const raw = error instanceof Error ? error.message : '';
+	if (/context invalidated/i.test(raw)) {
+		return '拡張機能が更新されました。このページを再読み込みしてから、もう一度お試しください。';
+	}
+	return raw || '接続できませんでした。';
+}
+
 function replyConnectionRequest(request: ShelfConnectionRequest) {
 	window.postMessage(
 		{ source: BRIDGE, type: 'connection-request', ...request },
@@ -59,8 +71,7 @@ export function setupShelfBridge() {
 			})
 			.then(replyConnectionRequest)
 			.catch((error: unknown) => {
-				const message = error instanceof Error ? error.message : '接続できませんでした。';
-				reply('connect-failed', message);
+				reply('connect-failed', friendlyMessage(error));
 			});
 			return;
 		}
@@ -82,8 +93,7 @@ export function setupShelfBridge() {
 		})
 			.then(() => reply('connected'))
 			.catch((error: unknown) => {
-				const message = error instanceof Error ? error.message : '接続できませんでした。';
-				reply('connect-failed', message);
+				reply('connect-failed', friendlyMessage(error));
 			});
 	});
 }

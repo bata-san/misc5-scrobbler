@@ -42,7 +42,13 @@ function isShelfAppUrl(url: string): boolean {
 // activeTab is granted when the user opens the extension popup. This keeps
 // the connection bridge off every page until that explicit action.
 export async function injectShelfBridgeForActiveTab() {
-	const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+	// `currentWindow` can be the extension popup itself. The popup is opened
+	// from a browser tab, so the last focused browser window is the reliable
+	// source of the tab that received the activeTab grant.
+	const [tab] = await browser.tabs.query({
+		active: true,
+		lastFocusedWindow: true,
+	});
 	if (typeof tab?.id !== 'number' || !tab.url || !isShelfAppUrl(tab.url)) return;
 	await browser.scripting.executeScript({
 		target: { tabId: tab.id },

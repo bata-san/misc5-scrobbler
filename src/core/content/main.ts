@@ -10,6 +10,10 @@ import regexEdits from '../storage/regex-edits';
 import { webhookListenForApproval } from './webhook';
 import { setupShelfBridge } from './shelf-bridge';
 
+const CONTENT_SCRIPT_MARKER = '__misc5ScrobblerContentScriptInstalled__';
+
+(globalThis as typeof globalThis & Record<string, boolean>)[CONTENT_SCRIPT_MARKER] = true;
+
 main();
 async function main() {
 	setupShelfBridge();
@@ -72,8 +76,8 @@ function updateTheme() {
 	const theme = window.matchMedia('(prefers-color-scheme: dark)').matches
 		? 'dark'
 		: 'light';
-	sendContentMessage({
+	void sendContentMessage({
 		type: 'updateTheme',
 		payload: theme,
-	});
+	}).catch(() => undefined);
 }

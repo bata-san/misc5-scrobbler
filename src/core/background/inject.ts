@@ -4,6 +4,7 @@ import browser from 'webextension-polyfill';
 const SHELF_APP_ORIGIN = 'https://misc5-shelf.butter3.workers.dev';
 const PLAYBACK_SITE_MATCHES = ['http://*/*', 'https://*/*'];
 const PLAYBACK_CONTENT_SCRIPT_ID = 'misc5-playback-sites';
+const CONTENT_SCRIPT_MARKER = '__misc5ScrobblerContentScriptInstalled__';
 
 async function hasPlaybackHostAccess(): Promise<boolean> {
 	return browser.permissions.contains({ origins: PLAYBACK_SITE_MATCHES });
@@ -39,6 +40,39 @@ function isShelfAppUrl(url: string): boolean {
 	}
 }
 
+async function injectContentScript(tabId: number): Promise<boolean> {
+	const [reservation] = await browser.scripting.executeScript({
+		target: { tabId },
+		args: [CONTENT_SCRIPT_MARKER],
+		func: (marker) => {
+			if (typeof marker !== 'string') return false;
+			const page = globalThis as unknown as Record<string, boolean>;
+			if (page[marker]) return false;
+			page[marker] = true;
+			return true;
+		},
+	});
+	if (!reservation?.result) return false;
+
+	try {
+		await browser.scripting.executeScript({
+			target: { tabId },
+			files: ['content/main.js'],
+		});
+		return true;
+	} catch (error) {
+		await browser.scripting.executeScript({
+			target: { tabId },
+			args: [CONTENT_SCRIPT_MARKER],
+			func: (marker) => {
+				if (typeof marker !== 'string') return;
+				delete (globalThis as unknown as Record<string, boolean>)[marker];
+			},
+		});
+		throw error;
+	}
+}
+
 // activeTab is granted when the user opens the extension popup. This keeps
 // the connection bridge off every page until that explicit action.
 export async function injectShelfBridgeForActiveTab() {
@@ -50,10 +84,7 @@ export async function injectShelfBridgeForActiveTab() {
 		lastFocusedWindow: true,
 	});
 	if (typeof tab?.id !== 'number' || !tab.url || !isShelfAppUrl(tab.url)) return;
-	await browser.scripting.executeScript({
-		target: { tabId: tab.id },
-		files: ['content/main.js'],
-	});
+	await injectContentScript(tab.id);
 }
 
 /**
@@ -103,11 +134,7 @@ async function injectConnector(tabId: number, url: string, playbackEnabled: bool
 	 * As scripts are always invalidated on reload, and this only runs on install, there is no need.
 	 */
 
-	const script = 'content/main.js';
-	browser.scripting.executeScript({
-		target: { tabId },
-		files: [script],
-	});
+	void injectContentScript(tabId);
 }
 
 /**

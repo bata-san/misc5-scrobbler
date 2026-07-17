@@ -7,8 +7,6 @@ import { Anchor } from '../components/util';
 import styles from './settings.module.scss';
 
 const PRIVACY_POLICY_URL = 'https://misc5-shelf.butter3.workers.dev/privacy';
-const SHELF_APP_URL = 'https://misc5-shelf.butter3.workers.dev/';
-const SHELF_APP_MATCH = `${SHELF_APP_URL}*`;
 const PLAYBACK_ORIGINS = ['http://*/*', 'https://*/*'];
 
 type ShelfConnection = { account: string };
@@ -78,30 +76,6 @@ async function readSettings(): Promise<ExtensionSettings> {
 	};
 }
 
-async function advanceConnectedShelfPages() {
-	const tabs = await browser.tabs.query({ url: [SHELF_APP_MATCH] });
-	await Promise.all(
-		tabs
-			.filter((tab) => typeof tab.id === 'number')
-			.map((tab) =>
-				browser.scripting
-					.executeScript({
-						target: { tabId: tab.id as number },
-						func: () => {
-							window.postMessage(
-								{
-									source: 'misc5-shelf-extension',
-									type: 'sync-access-granted',
-								},
-								window.location.origin,
-							);
-						},
-					})
-					.catch(() => undefined),
-			),
-	);
-}
-
 function Toggle(props: {
 	label: string;
 	detail: string;
@@ -161,11 +135,8 @@ function Settings() {
 	const requestPlaybackAccess = () => {
 		void browser.permissions
 			.request({ origins: PLAYBACK_ORIGINS })
-			.then(async (granted) => {
+			.then(async () => {
 				await refetchPlaybackAccess();
-				if (granted) {
-					await advanceConnectedShelfPages();
-				}
 			});
 	};
 	const jumpTo = (id: string) => {

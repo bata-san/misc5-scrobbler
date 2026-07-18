@@ -5,19 +5,14 @@ import { t } from '@/util/i18n';
 import { SentimentDissatisfiedOutlined } from '@/ui/components/icons';
 import styles from './popup.module.scss';
 import { PopupAnchor } from '../components/util';
-
-const SHELF_APP_ORIGIN = 'https://misc5-shelf.butter3.workers.dev';
+import { isShelfAppOrigin } from '@/core/shelf/origin';
 
 async function isShelfActiveTab(): Promise<boolean> {
 	const [tab] = await browser.tabs.query({
 		active: true,
 		lastFocusedWindow: true,
 	});
-	try {
-		return new URL(tab?.url ?? '').origin === SHELF_APP_ORIGIN;
-	} catch {
-		return false;
-	}
+	return isShelfAppOrigin(tab?.url ?? '');
 }
 
 /**

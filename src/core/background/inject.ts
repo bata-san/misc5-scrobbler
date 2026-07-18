@@ -1,7 +1,7 @@
 import { getConnectorByUrl } from '@/util/util-connector';
 import browser from 'webextension-polyfill';
+import { isShelfAppOrigin } from '@/core/shelf/origin';
 
-const SHELF_APP_ORIGIN = 'https://misc5-shelf.butter3.workers.dev';
 const PLAYBACK_SITE_MATCHES = ['http://*/*', 'https://*/*'];
 const PLAYBACK_CONTENT_SCRIPT_ID = 'misc5-playback-sites';
 const CONTENT_SCRIPT_MARKER = '__misc5ScrobblerContentScriptInstalled__';
@@ -33,11 +33,7 @@ export async function unregisterPlaybackContentScript() {
 }
 
 function isShelfAppUrl(url: string): boolean {
-	try {
-		return new URL(url).origin === SHELF_APP_ORIGIN;
-	} catch {
-		return false;
-	}
+	return isShelfAppOrigin(url);
 }
 
 async function injectContentScript(tabId: number): Promise<boolean> {

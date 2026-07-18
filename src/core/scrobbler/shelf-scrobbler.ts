@@ -5,6 +5,7 @@ import type ClonedSong from '@/core/object/cloned-song';
 import { ServiceCallResult } from '@/core/object/service-call-result';
 import BaseScrobbler, { type SessionData } from '@/core/scrobbler/base-scrobbler';
 import browser from 'webextension-polyfill';
+import { normalizeShelfOrigin } from '@/core/shelf/origin';
 
 type ShelfRequest = {
 	eventName: 'nowplaying' | 'scrobble';
@@ -55,11 +56,7 @@ async function makeChallenge(verifier: string): Promise<string> {
 }
 
 function normalizeOrigin(value: string): string {
-	const url = new URL(value);
-	if (url.protocol !== 'https:' && !(url.protocol === 'http:' && url.hostname === 'localhost')) {
-		throw new Error('安全なシェルフURLではありません。');
-	}
-	return url.origin;
+	return normalizeShelfOrigin(value);
 }
 
 /** シェルフへ送信するscrobbler。ユーザーがURLやWebhookを設定する必要はない。 */
@@ -188,7 +185,18 @@ export default class ShelfScrobbler extends BaseScrobbler<'Shelf'> {
 
 	private async getConnection(): Promise<ShelfConnection | null> {
 		const stored = await this.storage.get();
-		return stored?.connection ?? null;
+		const connection = stored?.connection;
+		if (!connection) return null;
+		try {
+			const origin = normalizeOrigin(connection.origin);
+			if (origin === connection.origin) return connection;
+			const migrated = { ...connection, origin };
+			await this.storage.set({ ...stored, connection: migrated });
+			return migrated;
+		} catch {
+			await this.storage.set({});
+			return null;
+		}
 	}
 
 	private async saveTokens(origin: string, tokens: TokenResponse): Promise<void> {

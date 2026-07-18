@@ -1,8 +1,8 @@
 import { sendContentMessage } from '@/util/communication';
 import type { ShelfConnectionRequest } from '@/core/scrobbler/shelf-scrobbler';
+import { isShelfBridgeOrigin } from '@/core/shelf/origin';
 
 const BRIDGE = 'misc5-shelf-extension';
-const PRODUCTION_SHELF_ORIGIN = 'https://misc5-shelf.butter3.workers.dev';
 
 type BridgeMessage = {
 	source?: string;
@@ -36,16 +36,7 @@ function replyConnectionRequest(request: ShelfConnectionRequest) {
 }
 
 function isTrustedShelfOrigin(origin: string): boolean {
-	try {
-		const url = new URL(origin);
-		return (
-			url.origin === PRODUCTION_SHELF_ORIGIN ||
-			(url.protocol === 'http:' &&
-				(url.hostname === 'localhost' || url.hostname === '127.0.0.1'))
-		);
-	} catch {
-		return false;
-	}
+	return isShelfBridgeOrigin(origin);
 }
 
 // シェルフのWebページだけが呼ぶ接続ブリッジ。PKCE verifierはbackgroundに残したまま、

@@ -2,6 +2,7 @@ import type { Manifest } from 'webextension-polyfill';
 import pkg from './package.json';
 import { releaseTarget } from './scripts/util';
 import connectors from './src/core/connectors';
+import { SHELF_APP_MATCHES } from './src/core/shelf/origin';
 
 /**
  * Chrome's actual match-pattern grammar for host_permissions/content_scripts:
@@ -89,8 +90,6 @@ const MAJOR_CONNECTOR_IDS = new Set([
 // needs this content script for the page <-> extension device-auth bridge.
 // Keep this explicit origin outside the connector allow-list so reducing
 // playback-site permissions can never silently break account connection.
-const SHELF_APP_MATCHES = ['https://misc5-shelf.butter3.workers.dev/*'];
-
 /**
  * The exact set of sites the content script (and its programmatic
  * re-injection on reload, see core/background/inject.ts) needs to run on,

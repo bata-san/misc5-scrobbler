@@ -5,8 +5,8 @@ import connectors, { type ConnectorMeta } from '@/core/connectors';
 import * as Options from '@/core/storage/options';
 import { Anchor } from '../components/util';
 import styles from './settings.module.scss';
+import { SHELF_PRIVACY_POLICY_URL } from '@/core/shelf/origin';
 
-const PRIVACY_POLICY_URL = 'https://misc5-shelf.butter3.workers.dev/privacy';
 const PLAYBACK_ORIGINS = ['http://*/*', 'https://*/*'];
 
 type ShelfConnection = { account: string };
@@ -282,7 +282,7 @@ function Settings() {
 						</div>
 						<Anchor
 							class={styles.privacyLink}
-							href={PRIVACY_POLICY_URL}
+							href={SHELF_PRIVACY_POLICY_URL}
 							target="_blank"
 						>
 							プライバシーポリシーを見る ↗

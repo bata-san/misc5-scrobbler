@@ -10,7 +10,7 @@ import regexEdits from '../storage/regex-edits';
 import { webhookListenForApproval } from './webhook';
 import { setupShelfBridge } from './shelf-bridge';
 
-const CONTENT_SCRIPT_MARKER = '__misc5ScrobblerContentScriptInstalled__';
+const CONTENT_SCRIPT_MARKER = `__misc5ScrobblerContentScriptInstalled_${browser.runtime.getManifest().version}__`;
 
 (globalThis as typeof globalThis & Record<string, boolean>)[CONTENT_SCRIPT_MARKER] = true;
 

@@ -4,7 +4,9 @@ import { isShelfAppOrigin } from '@/core/shelf/origin';
 
 const PLAYBACK_SITE_MATCHES = ['http://*/*', 'https://*/*'];
 const PLAYBACK_CONTENT_SCRIPT_ID = 'misc5-playback-sites';
-const CONTENT_SCRIPT_MARKER = '__misc5ScrobblerContentScriptInstalled__';
+// 旧版のcontent scriptは更新後もタブ内に残る。バージョンを印に含めないと、
+// その古い印だけを見て新しいbridgeの再注入を止めてしまう。
+const CONTENT_SCRIPT_MARKER = `__misc5ScrobblerContentScriptInstalled_${browser.runtime.getManifest().version}__`;
 
 async function hasPlaybackHostAccess(): Promise<boolean> {
 	return browser.permissions.contains({ origins: PLAYBACK_SITE_MATCHES });

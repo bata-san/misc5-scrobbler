@@ -5,10 +5,10 @@ const LOCAL_SHELF_ORIGINS = new Set([
 
 // These are the public, production origins. Do not accept arbitrary HTTPS
 // origins here: the bridge exchanges an authorization code with this site.
-// `misc5.5.unitze.net` is the user-facing custom domain; the Workers URL
+// `misc5.unitze.net` is the user-facing custom domain; the Workers URL
 // remains supported for existing installs and direct deployments.
 export const SHELF_APP_ORIGIN = 'https://misc5-shelf.im-super-yuanchan.workers.dev';
-export const SHELF_CUSTOM_ORIGIN = 'https://misc5.5.unitze.net';
+export const SHELF_CUSTOM_ORIGIN = 'https://misc5.unitze.net';
 const SHELF_APP_ORIGINS = new Set([
 	SHELF_APP_ORIGIN,
 	SHELF_CUSTOM_ORIGIN,

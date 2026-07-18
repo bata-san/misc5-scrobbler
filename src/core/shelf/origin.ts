@@ -3,9 +3,16 @@ const LOCAL_SHELF_ORIGINS = new Set([
 	'http://127.0.0.1:3000',
 ]);
 
-// This is the public, production origin. Do not accept arbitrary HTTPS
+// These are the public, production origins. Do not accept arbitrary HTTPS
 // origins here: the bridge exchanges an authorization code with this site.
+// `misc5.5.unitze.net` is the user-facing custom domain; the Workers URL
+// remains supported for existing installs and direct deployments.
 export const SHELF_APP_ORIGIN = 'https://misc5-shelf.im-super-yuanchan.workers.dev';
+export const SHELF_CUSTOM_ORIGIN = 'https://misc5.5.unitze.net';
+const SHELF_APP_ORIGINS = new Set([
+	SHELF_APP_ORIGIN,
+	SHELF_CUSTOM_ORIGIN,
+]);
 
 // Tokens from the previous Worker deployment were copied to the quon D1
 // database. Retain only this one legacy value long enough to upgrade stored
@@ -14,7 +21,7 @@ const LEGACY_SHELF_ORIGINS = new Set([
 	'https://misc5-shelf.butter3.workers.dev',
 ]);
 
-export const SHELF_APP_MATCHES = [`${SHELF_APP_ORIGIN}/*`];
+export const SHELF_APP_MATCHES = Array.from(SHELF_APP_ORIGINS, (origin) => `${origin}/*`);
 export const SHELF_PRIVACY_POLICY_URL = new URL('/privacy', SHELF_APP_ORIGIN).toString();
 
 function toOrigin(value: string): string {
@@ -23,7 +30,7 @@ function toOrigin(value: string): string {
 
 export function isShelfAppOrigin(value: string): boolean {
 	try {
-		return toOrigin(value) === SHELF_APP_ORIGIN;
+		return SHELF_APP_ORIGINS.has(toOrigin(value));
 	} catch {
 		return false;
 	}
@@ -32,7 +39,7 @@ export function isShelfAppOrigin(value: string): boolean {
 export function isShelfBridgeOrigin(value: string): boolean {
 	try {
 		const origin = toOrigin(value);
-		return origin === SHELF_APP_ORIGIN || LOCAL_SHELF_ORIGINS.has(origin);
+		return SHELF_APP_ORIGINS.has(origin) || LOCAL_SHELF_ORIGINS.has(origin);
 	} catch {
 		return false;
 	}
@@ -45,7 +52,7 @@ export function isShelfBridgeOrigin(value: string): boolean {
  */
 export function normalizeShelfOrigin(value: string): string {
 	const origin = toOrigin(value);
-	if (origin === SHELF_APP_ORIGIN || LOCAL_SHELF_ORIGINS.has(origin)) return origin;
+	if (SHELF_APP_ORIGINS.has(origin) || LOCAL_SHELF_ORIGINS.has(origin)) return origin;
 	if (LEGACY_SHELF_ORIGINS.has(origin)) return SHELF_APP_ORIGIN;
 	throw new Error('安全なシェルフURLではありません。');
 }
